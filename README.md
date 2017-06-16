@@ -8,5 +8,22 @@ The Sumologic backend has two required options:
  - `format` The format description string to use to generate log messages.
  - `endpoint` The HTTP endpoint to use for logging.
 
- An additional option `batch_timeout` can be used to specify for how long the Logger backend should wait for
- messages before sending them to Sumologic.
+The following options are optional:
+ - `metadata` List of meta-data keys to log.
+ - `batch_timeout` Specifies how long the Logger backend accumulates messages before sending them to Sumologic.
+ - `source_name` Specifies the source name to use.
+ - `source_category` Specifies the source category to use.
+
+Example configuration:
+```
+config :logger, :sumologic,
+  format: "[$date $time] - $level [$metadata] message=$message",
+  metadata: [:request_id, :module, :line],
+  source_category: "develop/backend",
+  source_name: "elixir",
+  endpoint: """
+https://endpoint1.collection.eu.sumologic.com/receiver\
+/v1/http/dassaddd23eqwd987y12983rfehci34vt984375098f3d4dm0tn3e
+"""
+
+```

@@ -15,6 +15,7 @@ defmodule LoggerSumologicBackend do
     client: nil,
     client_id: nil,
     queue_agent: nil,
+    metadata_keys: []
   ]
 
   def init({__MODULE__, logger_id}) do
@@ -23,10 +24,10 @@ defmodule LoggerSumologicBackend do
     config = Application.get_env(:logger, logger_id)
 
     client = Keyword.get(config, :client, LoggerSumologicBackend.Clients.HTTPoison)
-
     client_id = client.init(config)
 
     batch_timeout = Keyword.get(config, :batch_timeout, state.batch_timeout)
+    metadata_keys = Keyword.get(config, :metadata, state.metadata_keys)
 
     queue_agent = 
       if batch_timeout == 0 do
@@ -47,7 +48,8 @@ defmodule LoggerSumologicBackend do
       client: client,
       client_id: client_id,
       batch_timeout: batch_timeout,
-      queue_agent: queue_agent
+      queue_agent: queue_agent,
+      metadata_keys: metadata_keys,
     }
 
     {:ok, state}
@@ -58,22 +60,19 @@ defmodule LoggerSumologicBackend do
       level: level,
       message: message,
       timestamp: timestamp,
-      metadata: metadata
+      metadata: Keyword.take(metadata, state.metadata_keys),
     }  
     {:ok, dispatch(state, entry)}
   end
   def handle_event(:flush, state) do
-    IO.puts("Flush")
     {:ok, state}
   end
 
-  def handle_call({:configure, options}, state) do
-    IO.puts("Configure: #{inspect options}")
+  def handle_call({:configure, _options}, state) do
     {:ok, :ok, state}
   end
 
-  def handle_info(msg, state) do
-    IO.inspect(msg)
+  def handle_info(_msg, state) do
     {:ok, state}
   end
 
