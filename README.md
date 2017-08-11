@@ -27,3 +27,8 @@ https://endpoint1.collection.eu.sumologic.com/receiver\
 """
 
 ```
+
+## Test
+
+In order to be able to run the test-suite, the 'endpoint' variable in ``test/clients/httpoison_test.exs`` must be
+set.

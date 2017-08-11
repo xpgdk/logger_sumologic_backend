@@ -1,19 +1,19 @@
 defmodule LoggerSumologicBackend.Clients.HTTPoisonTest do
-  
+
   use ExUnit.Case
 
   alias LoggerSumologicBackend.Clients
   alias LoggerSumologicBackend.Entry
 
-  setup do    
-    endpoint = """
-"""
+  setup do
+    endpoint = ""
+
     client_id = Clients.HTTPoison.init([
       endpoint: endpoint,
       format: "[$date $time] - $level [$metadata] message=$message",
       ])
 
-    {:ok, 
+    {:ok,
       client_id: client_id
     }
   end

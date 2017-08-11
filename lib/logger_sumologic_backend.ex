@@ -6,8 +6,6 @@ defmodule LoggerSumologicBackend do
   [here](https://help.sumologic.com/Send_Data/Sources/02Sources_for_Hosted_Collectors/HTTP_Source)
   """
 
-  alias LoggerSumologicBackend.Entry
-
   use GenEvent
 
   defstruct [
@@ -56,7 +54,7 @@ defmodule LoggerSumologicBackend do
   end
 
   def handle_event({level, _gl, {Logger, message, timestamp, metadata}}, state) do
-    entry = %Entry{
+    entry = %LoggerSumologicBackend.Entry{
       level: level,
       message: message,
       timestamp: timestamp,

@@ -3,7 +3,7 @@ defmodule LoggerSumologicBackend.Mixfile do
 
   def project do
     [app: :logger_sumologic_backend,
-     version: "0.2.0",
+     version: "0.2.1",
      elixir: "~> 1.4",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -33,7 +33,7 @@ defmodule LoggerSumologicBackend.Mixfile do
     [
       {:httpoison, "~> 0.11.1"},
       {:dialyxir, "~> 0.5", runtime: false},
-      {:ex_doc, "~> 0.15.1", runtime: false},            
+      {:ex_doc, "~> 0.15.1", runtime: false},
     ]
   end
 end
