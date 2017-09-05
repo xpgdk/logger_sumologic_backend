@@ -2,7 +2,7 @@ defmodule LoggerSumologicBackend do
   @moduledoc """
   Implements Logger backend for Sumologic.
 
-  It uses the HTTP source as described 
+  It uses the HTTP source as described
   [here](https://help.sumologic.com/Send_Data/Sources/02Sources_for_Hosted_Collectors/HTTP_Source)
   """
 
@@ -27,7 +27,7 @@ defmodule LoggerSumologicBackend do
     batch_timeout = Keyword.get(config, :batch_timeout, state.batch_timeout)
     metadata_keys = Keyword.get(config, :metadata, state.metadata_keys)
 
-    queue_agent = 
+    queue_agent =
       if batch_timeout == 0 do
         nil
       else
@@ -36,13 +36,13 @@ defmodule LoggerSumologicBackend do
             client: client,
             client_id: client_id,
             queue: []
-          } 
+          }
         end)
         start_timer(batch_timeout, pid)
         pid
       end
 
-    state = %{state | 
+    state = %{state |
       client: client,
       client_id: client_id,
       batch_timeout: batch_timeout,
@@ -59,7 +59,7 @@ defmodule LoggerSumologicBackend do
       message: message,
       timestamp: timestamp,
       metadata: Keyword.take(metadata, state.metadata_keys),
-    }  
+    }
     {:ok, dispatch(state, entry)}
   end
   def handle_event(:flush, state) do
@@ -75,7 +75,7 @@ defmodule LoggerSumologicBackend do
   end
 
   defp dispatch(state, entry) do
-    if state.batch_timeout == 0 do         
+    if state.batch_timeout == 0 do
       state.client.log_event(state.client_id, [entry])
     else
       enqueue(state.queue_agent, entry)
@@ -85,8 +85,8 @@ defmodule LoggerSumologicBackend do
 
 
   defp enqueue(queue_agent, entry) do
-    Agent.update(queue_agent, 
-      fn state -> 
+    Agent.update(queue_agent,
+      fn state ->
         %{state |
           queue: [ entry | state.queue]
         }
