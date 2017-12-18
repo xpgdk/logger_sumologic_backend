@@ -33,7 +33,7 @@ defmodule LoggerSumologicBackend.Clients.HTTPoison do
     IO.puts("LoggerSumologicBackend: Giving up on sending request")
   end
   def log_event(config, entries, retry) do
-    case HTTPoison.post(config.endpoint, generate_body(config, entries), config.headers) do
+    case HTTPoison.post(config.endpoint, generate_body(config, entries), config.headers, hackney: [pool: :sumologic]) do
       {:ok, resp} ->
         if resp.status_code != 200 do
           IO.puts("LoggerSumologicBackend: Failed to send request to \"#{config.endpoint}\", expected 200 got #{resp.status_code}. Retries left: #{Integer.to_string(retry)}")
