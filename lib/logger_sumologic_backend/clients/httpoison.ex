@@ -39,6 +39,9 @@ defmodule LoggerSumologicBackend.Clients.HTTPoison do
           IO.puts("LoggerSumologicBackend: Failed to send request to \"#{config.endpoint}\", expected 200 got #{resp.status_code}. Retries left: #{Integer.to_string(retry)}")
           log_event(config, entries, retry-1)
         end
+        if retry < 4 do
+          IO.puts("LogggerSumologicBackend: Success with retry = #{Integer.to_string(retry)}")
+        end
       {:error, reason} ->
         IO.puts("LoggerSumologicBackend: Failed to send request: #{inspect reason}. Retries left: #{Integer.to_string(retry)}")
         log_event(config, entries, retry-1)
