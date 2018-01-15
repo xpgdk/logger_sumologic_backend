@@ -16,7 +16,7 @@ defmodule LoggerSumologicBackend.Mixfile do
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
     [
-      applications: [:httpoison, :logger]
+      applications: [:certifi, :httpotion, :httpoison, :logger]
     ]
   end
 
@@ -31,7 +31,8 @@ defmodule LoggerSumologicBackend.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:httpoison, "~> 0.13.0"},
+      {:httpoison, "~> 0.13.0", optional: true},
+      {:httpotion, "~> 3.0", optional: true},
       {:dialyxir, "~> 0.5", runtime: false},
       {:ex_doc, "~> 0.15.1", runtime: false},
     ]
