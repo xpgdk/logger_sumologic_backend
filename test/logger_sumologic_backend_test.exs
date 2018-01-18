@@ -4,7 +4,6 @@ defmodule LoggerSumologicBackendTest do
   alias LoggerSumologicBackend.Clients
 
   defp launch_logger(config) do
-
     current_config = Application.get_env(:logger, :sumologic)
     Application.put_env(:logger, :sumologic, Keyword.merge(current_config, config))
 
@@ -32,14 +31,13 @@ defmodule LoggerSumologicBackendTest do
   end
 
   describe "batch_timeout = 0" do
-
-    setup do    
+    setup do
       {:ok,
-        logger: launch_logger(batch_timeout: 0)
+        logger: launch_logger(batch_timeout: 0, delay: 0)
       }
     end
 
-    test "log single entry", tags do     
+    test "log single entry", tags do
       log tags, :warn, "Hello world", nil
 
       entries = log_entries()
@@ -48,7 +46,7 @@ defmodule LoggerSumologicBackendTest do
       assert List.first(entries).message == "Hello world"
     end
 
-    test "log multiple entries separatly", tags do     
+    test "log multiple entries separatly", tags do
       log tags, :warn, "Hello world", nil
       log tags, :warn, "Hello world 2", nil
       log tags, :warn, "Hello world 3", nil
@@ -64,13 +62,13 @@ defmodule LoggerSumologicBackendTest do
       entries = log_entries()
       assert Enum.count(entries) == 1
       assert List.first(entries).message == "Hello world 3"
-    end    
+    end
   end
 
   describe "batch_timeout = 500" do
     setup do
       {:ok,
-        logger: launch_logger(batch_timeout: 500)
+        logger: launch_logger(batch_timeout: 500, delay: 0)
       }
     end
 
@@ -81,14 +79,13 @@ defmodule LoggerSumologicBackendTest do
 
       entries = log_entries()
       assert Enum.count(entries) == 1
-      assert List.first(entries).message == "Hello world"      
+      assert List.first(entries).message == "Hello world"
     end
 
     test "batch multiple log entries into one", tags do
       log tags, :warn, "Hello world", nil
       log tags, :warn, "Hello world 2", nil
       log tags, :warn, "Hello world 3", nil
-
 
       entries = log_entries()
       assert Enum.count(entries) == 3
@@ -100,5 +97,27 @@ defmodule LoggerSumologicBackendTest do
       no_log_entries(1000)
     end
 
+  end
+
+  describe "Slow client:" do
+    setup do
+      {:ok,
+        logger: launch_logger(batch_timeout: 500, delay: 6_000)
+      }
+    end
+
+    test "Log two entries", tags do
+      log tags, :warn, "Hello world", nil
+
+      no_log_entries(6000)
+      entries = log_entries(2000)
+      assert Enum.count(entries) == 1
+
+      log tags, :warn, "Second message", nil
+
+      no_log_entries(6000)
+      entries = log_entries()
+      assert Enum.count(entries) == 1
+    end
   end
 end

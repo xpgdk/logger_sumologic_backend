@@ -83,7 +83,6 @@ defmodule LoggerSumologicBackend do
     state
   end
 
-
   defp enqueue(queue_agent, entry) do
     Agent.update(queue_agent,
       fn state ->
@@ -101,7 +100,9 @@ defmodule LoggerSumologicBackend do
     Agent.update(agent_pid, fn state ->
       queue = Enum.reverse(state.queue)
       if Enum.count(queue) > 0 do
-        state.client.log_event(state.client_id, queue)
+        Task.start(fn ->
+          state.client.log_event(state.client_id, queue)
+        end)
       end
       %{state |
         queue: []
